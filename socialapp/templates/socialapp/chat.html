@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chat App Template</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+</head>
+<body>
+  <div id="app" class="app">
+
+    <!-- LEFT SECTION -->
+
+    <section id="main-left" class="main-left">
+      <!-- header --> 
+        <a href="{%url 'profile' %}">
+
+          <div id="self-info" class="self-info">
+    
+            <!-- photo -->
+    
+            <div class="profile your-photo">
+              <img src="/media/{{request.user.profile_pic}}" style="height: 30px; width:30px; border-radius:50px" alt="">
+            </div>
+            <!-- name -->
+            <h4 class="name your-name">{{request.user.full_name}}</h4>
+    
+            <!-- setting btn -->
+     
+          </div>
+        </a>
+       
+
+      <!-- chat list -->
+      {% if friends %}
+
+      <div id="chat-list" class="chat-list">
+        <!-- user lists -->
+        {%for friend in friends %}
+        {%if friend.sender_id != request.user.id %}
+        <a href="/chat-between-{{friend.slug}}" style="text-decoration: none;">
+
+        <div id="friends" class="friends">
+          <!-- photo -->
+          <div class="profile friends-photo">
+            <img src="/media/{{friend.sender.profile_pic}}"  style="height: 30px; width:30px; border-radius:100px" alt="">
+          </div>
+          
+          <div class="friends-credent">
+            <!-- name -->
+            <span class="friends-name">{{friend.sender.full_name}}</span>
+            <!-- last message -->
+            <span class="friends-message">your invitation</span>
+
+          </div>
+          <!-- notification badge -->
+          <span class="badge notif-badge">7</span>
+        </div>
+        </a>
+
+        {% elif friend.to_id != request.user.id %}
+        <a href="/chat-between-{{friend.slug}}" style="text-decoration: none;">
+        <div id="friends" class="friends">
+          <!-- photo -->
+          <div class="profile friends-photo">
+            <img src="/media/{{friend.to.profile_pic}}" style="height: 30px; width:30px; border-radius:100px" alt="">
+            
+          </div>
+          
+          <div class="friends-credent">
+            <!-- name -->
+            <span class="friends-name">{{friend.to.full_name}}</span>
+            <!-- last message -->
+            <span class="friends-message">you are the guest</span>
+          </div>
+          <!-- notification badge -->
+          <span class="badge notif-badge">7</span>
+        </div>
+      </a>
+        {% else %}
+        {%endif%}
+        {%endfor%}
+        {%endif%}
+
+      <!-- self-profile -->
+      
+
+    </section>
+
+
+
+    <!-- RIGHT SECTION -->
+
+    <section id="main-right" class="main-right">
+      <!-- header -->
+      <div id="header-right" class="header-right">
+        <!-- profile pict -->
+        {%if friend.sender_id == request.user.id %}
+
+        <div id="header-img" class="profile header-img">
+          <img src="/media/{{friend.to.profile_pic}}" style="width: 50px; height:50px; border-radius:100px" alt="">
+        </div>
+
+        <!-- name -->
+        <h4 class="name friend-name">{{friend.to.full_name}}</h4>
+        {% else %}
+        <div id="header-img" class="profile header-img">
+          <img src="/media/{{friend.sender.profile_pic}}" alt="">
+        </div>
+        <h4 class="name friend-name">{{friend.sender.full_name}}</h4>
+
+        {%endif%}
+
+        <!-- some btn -->
+        <div class="some-btn">
+          <span class="glyphicon glyphicon-facetime-video"></span>
+          <span class="glyphicon glyphicon-earphone"></span>
+          <span class="glyphicon glyphicon-option-vertical option-btn"></span>
+        </div>
+      </div>
+
+      <!-- chat area -->
+      <div id="chat-area" class="chat-area">
+        <!-- chat content -->
+
+        {%if msgs %}
+        {% for msg in msgs %}
+        {%if msg.msg_from.id == request.user.id %}
+        
+
+        <!-- YOUR CHAT TEMPLATE -->
+        <div id="your-chat" class="your-chat">
+          
+          
+          <p class="friends-chat-name">{{request.user.full_name}}</p>
+
+          <p class="your-chat-balloon">{{msg.message}}</p>
+          <p class="chat-datetime"><span class="glyphicon glyphicon-ok"></span> {{msg.date}} | {{msg.time}}</p>
+        </div>
+{% else %}
+        <!-- FRIENDS CHAT TEMPLATE -->
+        <div id="friends-chat" class="friends-chat">
+          <div class="profile friends-chat-photo">
+            <img src="/media/{{msg.msg_from.profile_pic}}" alt="" style="width:20px; height:20px; border-radius:50px">
+
+          </div>
+          <div class="friends-chat-content">
+            <p class="friends-chat-name">{{msg.msg_from.full_name}}</p>
+            <p class="friends-chat-balloon">{{msg.message}}</p>
+            <h5 class="chat-datetime">{{msg.date}} | {{msg.time}}</h5>
+          </div>
+        </div>
+        {% endif %}
+
+        {% endfor %}
+        {%endif%}
+
+      </div>
+      <!-- typing area -->
+      <div id="typing-area" class="typing-area">
+        <!-- input form -->
+        <input id="msg-box" class="type-area" placeholder="Type something...">
+        <!-- attachment btn -->
+        <!-- <div class="attach-btn">
+          <span class="glyphicon glyphicon-paperclip file-btn"></span>
+          <span class="glyphicon glyphicon-camera"></span>
+          <span class="glyphicon glyphicon-picture"></span>
+          
+        </div> -->
+        <!-- send btn -->
+        <button class="btn btn-sm btn-primary" onclick="sendMsg()" style="height:40px; float:right; width:70px; margin-top:10px;">Send</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="creator" class="creator">
+    {{request.user}}
+   </div>
+    <!-- jQuey, Popper, BootstrapJS -->
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<script>
+  var slug = "{{slug}}"
+  var my_id = "{{request.user.id}}"
+  console.log(slug);
+  ws = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${slug}`)
+
+  ws.open = function(e){
+    console.log("connection opend")
+  }
+
+  function sendMsg(){
+    var msg = $('#msg-box').val()
+    var message_to = "{{message_to_id}}"
+    var message_from = "{{request.user.id}}"
+    var friend_relation = "{{friend_rel}}"
+    ws.send(JSON.stringify({
+      'msg':msg,
+      'message_to':message_to,
+      'message_from':message_from,
+      'friends_rel':friend_relation
+    }))
+  }
+
+  ws.onmessage = function(e){
+    data = JSON.parse(e.data)
+    var msg = $('#msg-box').val('')
+
+    if(data.msg_from == my_id){
+      document.getElementById("chat-area").innerHTML+=`<div id="your-chat" class="your-chat">
+         
+
+        <p class="your-chat-balloon">${data.msg}</p>
+        <p class="chat-datetime"><span class="glyphicon glyphicon-ok"></span> {{msg.date}} | {{msg.time}}</p>
+      </div>
+      `
+      var objDiv = document.getElementById("chat-area");
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }else{
+      document.getElementById("chat-area").innerHTML += `
+      <div id="friends-chat" class="friends-chat">
+        <div class="profile friends-chat-photo">
+           
+        </div>
+        <div class="friends-chat-content">
+           
+          <p class="friends-chat-balloon">${data.msg}</p>
+          
+        </div>
+      </div>`
+    }
+    
+  var objDiv = document.getElementById("chat-area");
+  objDiv.scrollTop = objDiv.scrollHeight;
+  }
+
+
+  var objDiv = document.getElementById("chat-area");
+objDiv.scrollTop = objDiv.scrollHeight;
+
+</script>

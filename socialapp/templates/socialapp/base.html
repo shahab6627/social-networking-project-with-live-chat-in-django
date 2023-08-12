@@ -1,0 +1,268 @@
+{% load fontawesome_5 %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    
+    <title>{% block title %}  {% endblock title %}</title>
+    {% fontawesome_5_static %}
+    <link rel="stylesheet" href="/static/css/style.css">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" 
+href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" 
+integrity="sha384- 
+ B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" 
+  crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  
+  </head>
+
+      <!-- modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/upload-profile-image" method="post" enctype="multipart/form-data" id="profile_pic_upload_form">
+                {% csrf_token %}
+                <input style="width: 90%;margin-left:5%" name="profile-pic" required class="form-control profile-pic mt-2 form-control-sm btn btn-default" type="file">
+              <input style="width: 90%;margin-left:5%" type="submit" value="post now" class="btn mt-2 btn-outline-secondary">
+      
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+
+        
+  <body style="background-color: lightgrey;">
+   <div class="container mt-1">
+    <nav class="navbar navbar-expand-lg" style="background-color: white;">
+        <div class="container-fluid">
+          <button  class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <img src="/media/{{user.profile_pic}}" style="width: 40px; height:40px; border-radius:25px; ">
+            
+          </button>
+          <span> &nbsp<b>{{request.user.full_name}}</b></span>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active text-white" aria-current="page" href="#">rtrtr</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="{%url 'profile' %}">Home</a>
+              </li>
+              {%if request.user.is_authenticated%}
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="{%url 'logout' %}">Logout</a>
+              </li>
+              {%endif%}
+               
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+      </div>
+      
+      <div class="container">
+        <div class="row">
+        <div class="col-md-8">
+       
+          {% block content %}
+
+
+          {% endblock content %}
+          </div>
+   
+
+    <div class=" col-md-4 col-sm-12 col-xs-12 mt-2" >
+      <div class="card">
+          <div class="card-header">
+          <h5>Friends List</h5> 
+          </div>
+          
+          {% if friends %}
+          <ol class="list-group" id="friends-list">
+            {%for friend in friends %}
+            {% if friend.sender_id == request.user.id %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold"><a href="{%url 'full-profile' friend.sender.full_name|slugify friend.sender.id %}" style="text-decoration:none">
+                  {{friend.to.full_name}}
+                </a>
+                </div>
+               <a href="/chat-between-{{friend.slug}}" class="btn btn-sm btn-primary text-white">start conversation</a>
+              </div>
+              <span class="badge rounded-pill">
+                <a href="{%url 'full-profile' friend.sender.full_name|slugify friend.sender.id %}" >
+                  <img src="/media/{{friend.sender.profile_pic}}"
+                  style="width:50px; height:50px; border-radius:100px "
+                >
+                </a>
+              </span>
+            </li>
+            {%else%}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold"><a href="{%url 'full-profile' friend.sender.full_name|slugify friend.sender.id %}" style="text-decoration:none">
+                  {{friend.sender.full_name}}
+                </a>
+                </div>
+               <a href="/chat-between-{{friend.slug}}" class="btn btn-sm btn-primary text-white">start conversation</a>
+              </div>
+              <span class="badge rounded-pill">
+                <a href="{%url 'full-profile' friend.sender.full_name|slugify friend.sender.id %}" >
+                  <img src="/media/{{friend.sender.profile_pic}}"
+                  style="width:50px; height:50px; border-radius:100px "
+                >
+                </a>
+              </span>
+            </li>
+            {%endif%}
+             {%endfor%}
+          </ol>
+          {% else %}
+          <ul class="list-group" id="friends-list" style="list-style: none">
+
+            <small class="text-center" id="no-friends">you don't have any friend right now...</small>
+          </ul>
+          {% endif %}
+        </div>
+
+        <div class="card mt-2">
+          <div class="card-header">
+          <h5>Friends Requests</h5> 
+          </div>
+          
+          {% if friends_requests%}
+          <ol class="list-group" >
+            
+            {%for f_request in friends_requests%}
+            <li class="list-group-item d-flex justify-content-between align-items-start" id="li-{{f_request.id}}">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold"><a href="{%url 'full-profile' f_request.sender.full_name|slugify f_request.sender.id %}" style="text-decoration:none">{{f_request.sender.full_name}}</a></div>
+                <small>Date : {{f_request.created}}</small>
+                <p><small>
+                  <button class="btn btn-sm btn-success accept_request"
+                  data-request-id = "{{f_request.id}}"
+                  data-user-id="{{f_request.sender.id}}"
+                  data-user-name = "{{f_request.sender.full_name}}"
+                  data-url = "{%url 'handel-friend' %}"
+                  
+                  >Accept</button>
+                  <button class="btn btn-sm btn-danger reject_request" id="reject{{r_request.id}}"
+                  data-request-id = "{{f_request.id}}"
+                 
+
+                  >Reject</button>
+
+                </small></p>
+
+              </div>
+              <span class="badge rounded-pill">
+                <a href="{%url 'full-profile' f_request.sender.full_name|slugify f_request.sender.id %}" >
+                  <img src="/media/{{f_request.sender.profile_pic}}"
+                  style="width:50px; height:50px; border-radius:100px "
+                >
+                </a>
+              </span>
+            </li>
+             {%endfor%}
+          </ol>
+          {% else %}
+
+          <h6 class="text-center"> No Friend Requests </h6>
+          {%endif%}
+        </div>
+
+      </div>
+   </div>
+  </div>
+
+   
+   </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script> 
+<script src="/static/js/reg_login.js"></script>
+<script src="/static/js/sendinvitation.js"></script>
+<script src="/static/js/like_inc.js"></script>
+
+</body>
+
+
+</html>
+
+
+<script>
+
+  const accept_btn = [...document.getElementsByClassName('accept_request')]
+
+accept_btn.forEach(accept_btn=>accept_btn.addEventListener('click', ()=>{
+    var btn_id = accept_btn.getAttribute('data-request-id')
+    var user_name = accept_btn.getAttribute('data-user-name')
+    var user_id = accept_btn.getAttribute('data-user-id')
+    var remove_li = document.getElementById(`li-${btn_id}`)
+    console.log(remove_li);
+    console.log(user_name);
+
+
+    $.ajax({
+
+        url : '{% url "handel-friend" %}',
+        method : 'GET',
+        data :{
+            'request_id':btn_id,
+        },
+        success : function(resp){
+            if(resp.msg=="true"){
+                el = document.createElement('li');
+                el.innerHTML = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold"><a href=full-profile/${user_name.toLowerCase()
+                    .replace(/ /g, "-")
+                    .replace(/[^\w-]+/g, "")}/${user_id} style="text-decoration:none">
+                    ${user_name}
+                  </a>
+                  </div>
+                 <a href="" class="btn btn-sm btn-primary text-white">start conversation</a>
+                </div>
+                
+              </li>`
+             var ol = document.getElementById('friends-list').innerHTML
+             document.getElementById('friends-list').appendChild(el);
+             
+             accept_btn.innerHTML = "request accepted"
+             accept_btn.disabled = true
+             $(`#reject${btn_id}`).disabled = true
+             document.getElementById("no-friends").innerText = ""
+
+             
+        }
+            else{
+                
+            }
+        }
+
+    })
+}))
+</script>

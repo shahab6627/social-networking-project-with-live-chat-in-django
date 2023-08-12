@@ -1,0 +1,124 @@
+{% extends 'socialapp/base.html' %}
+{%load static %}
+
+{% block title %}
+    {{request.user.full_name }} profile
+{% endblock title %}
+
+
+{% block content %}
+ 
+  
+        <div class="card mt-2">
+            <div class="card-header" style="background-color: dodgerblue;">
+            
+            {% if friend_status%}
+                
+            
+            {% for sts in friend_status %}
+            
+            {% if sts.status == "accepted" %}
+            
+            <h6><span class="badge bg-secondary" style="float:right">You are friends from {{sts.updated}} </span></h6>
+                {% elif sts.status == "unchecked" and sts.to_id == request.user.id%}
+                <button class="btn btn-sm btn-success accept_request" style="float:right"
+                data-request-id = "{{sts.id}}"
+                data-user-id="{{sts.sender.id}}"
+                data-user-name = "{{sts.sender.full_name}}"
+                data-url = "{%url 'handel-friend' %}"
+                
+                >accept</button>
+               {% elif sts.status == "unchecked" and sts.sender_id == request.user.id%}
+               <button class="btn btn-sm btn-info" style="float:right">waiting for approvel</button>
+                {% else %}
+                <button>send</button>
+            
+            {% endif %}
+                
+            {% endfor %}
+            {% else %}
+               <button class="btn btn-sm btn-success" style="float:right"
+               id="invitation-btn"
+               send-to-id = "{{user_data.id}}"
+               send-from = "{{request.user.id}}"
+               onclick="sendInvitation()"
+               
+               >Send friend request</button>
+            {%endif%}
+                
+        
+             
+             <h5 style="color:white">{{user_data.full_name}} Bio Data</h5>
+
+            </div>
+            <div>
+            </div>
+            <div style="margin-left:10px; margin-top:3px" style="height:auto"> 
+               <div class="row">
+                <div class="col-md-4">
+                   <div>Name : {{user_data.full_name}}</div>
+                   <div>Birth Day : {{user_data.date_of_birth}}</div>
+                   <div>Gender : {{user_data.gender}}</div>
+
+                </div>
+                <div class="col-md-1" style="border-left:1px solid silver"></div>
+                <div class="col-md-7 mb-3">
+                    <div>Uploaded Pictures</div>
+                    {%if pics %}
+                    {% for pics in profile_pics %}
+                    <img src="/media/{{pics.profile_pic}}" class="ml-2 rounded float-start" alt="" style="width:50px; height:50px; margin-left:2px">
+                    {% endfor %}
+                    {% else %}
+                    picture album is empty
+                    {%endif%}
+                </div>
+               </div>
+                  
+                        
+                
+              </div>
+               
+              
+          </div>
+          {% if posts %}
+          {%for post in posts %}
+      <div class="card mt-3">  
+          <div class="card-header" style="height: 70px;">
+      <div class="row">
+          <div class="col-md-8 col-lg-8 col-sm-8">
+            <a href="{% url 'full-profile' post.user.full_name|slugify  post.user.id %}">
+                <img src="/media/{{post.user.profile_pic}}" style="width: 40px; height:40px; border-radius:25px; " ></a>
+              <span ><b style="margin-left:10px">{{post.user.full_name}}</b></span>
+          </div>
+
+          <div class="col-md-4 col-lg-4 col-sm-4">
+              <div><small style="float:right; color:grey;">Date : {{post.created}}</small> </div>
+              <br><div>
+                  <a href="#"><i class="fa fa-trash text-danger " style="float:right; margin-right:20px" ></i> </a>
+                 
+                  <a href="#"><i class="fa fa-pen text-primary" style="float:right; margin-right:20px" ></i></a>
+              </div> 
+
+          </div>
+      </div>
+      <br>  
+          </div>
+          <img src="/media/{{post.post_image}}" style="height:250px" class="card-img-top" alt="...">
+          <div class="card-body">
+             
+            <p class="card-text">{{post.post_content}}</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+          <div class="card-footer text-muted">
+           <span> <i class="fa fa-thumbs-up text-primary fa-lg"></i><small style="margin-left:5px">{{post.likes}}</small><span>
+            <span style="float:right"><small>share</small> <i class="fa fa-share fa-lg text-info"> </i></span>
+          </div>
+        </div>
+        {%endfor%}
+
+         {%endif%}
+  
+<!-- <script src="/static/js//handel_friends.js"></script> -->
+   
+{% endblock content %}
+    

@@ -1,0 +1,109 @@
+{% extends 'socialapp/base.html' %}
+{%load static %}
+
+{% block title %}
+    {{request.user.full_name }} profile
+{% endblock title %}
+
+
+{% block content %}
+ 
+  
+        <div class="card mt-2">
+            <div class="card-header" style="background-color: dodgerblue;">
+             <h5 style="color:white">Say something</h5>
+            </div>
+            <div class="mb-3 " style="height:auto"> 
+              <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="post_content" class="form-label"></label>
+                <textarea class="form-control ml-3"  placeholder="say something {{request.user.full_name}} ...!" name="post_content" style="width: 90%;margin-left:5%" rows="3"></textarea>
+                <input style="width: 90%;margin-left:5%" class="form-control mt-2 form-control-sm btn btn-default" name="post_image" type="file">
+                <button style="width: 90%;margin-left:5%" type="submit" class="btn mt-2 btn-outline-secondary">Post Now</button>
+              </form>
+              </div>
+               
+              
+          </div>
+          {% if posts %}
+          {%for post in posts %}
+      <div class="card mt-3" id="card-{{post.id}}">  
+          <div class="card-header" style="height: 70px;">
+      <div class="row">
+          <div class="col-md-8 col-lg-8 col-sm-8">
+            <a href="{% url 'full-profile' post.user.full_name|slugify  post.user.id %}"><img src="media/{{post.user.profile_pic}}" style="width: 40px; height:40px; border-radius:25px; " ></a>
+              <span ><b style="margin-left:10px">{{post.user.full_name}}</b></span>
+          </div>
+
+          <div class="col-md-4 col-lg-4 col-sm-4">
+              <div><small style="float:right; color:grey;">Date : {{post.created}}</small> </div>
+              <br>
+              {%if post.user.id == request.user.id%}
+              <div>
+                  <span
+                  
+                  ><i class="fa fa-trash text-danger deletpost " data-post-id = "{{post.id}}" style="float:right; margin-right:20px" onclick="deletePost()"></i> </span>
+                 
+                  <a href="#"><i class="fa fa-pen text-primary" style="float:right; margin-right:20px" ></i></a>
+              </div> 
+              {%endif%}
+
+          </div>
+      </div>
+      <br>  
+          </div>
+          <img src="media/{{post.post_image}}" style="height:250px" class="card-img-top" alt="...">
+         
+          <div class="card-body">
+             
+            <p class="card-text">{{post.post_content}}</p>
+            
+          </div>
+          <div class="card-footer text-muted">
+           <span> 
+            
+            <button class="btn btn-sm like-btn" id="like{{post.id}}"
+            postId="{{post.id}}" 
+            ><i class="fa fa-thumbs-up text-primary fa-lg"></i>
+          </button>
+
+            <span style="margin-left:5px" id="like-{{post.id}}">{{post.likes}}</span>
+            <span style="float:right"><small>share</small> <i class="fa fa-share fa-lg text-info"> </i></span>
+          </div>
+        </div>
+        {%endfor%}
+        {%endif%}
+ 
+   <script src="/static/js/reg_login.js"></script>
+
+   <script>
+    function deletePost(){
+    var delete_btn = [...document.getElementsByClassName('deletpost')]
+    
+    delete_btn = delete_btn.forEach(delete_btn=>delete_btn.addEventListener('click', ()=>{
+      var post_id = delete_btn.getAttribute('data-post-id')
+
+      $.ajax({
+        url : '/delete-post',
+        method : 'GET',
+        data : {
+          'post_id':post_id
+        },
+
+        success : function(resp){
+          if(resp.msg == "true"){
+            $(`#card-${post_id}`).html('<span class="text-center">Post Deleted</span>')
+          }
+          else{
+
+          }
+        }
+      })
+    }))
+    
+    }
+    
+    </script>
+{% endblock content %}
+    
+
