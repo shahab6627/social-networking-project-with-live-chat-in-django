@@ -36,5 +36,5 @@ step 8: python manage.py runserver
 # screenshots 
 
 Registration page 
-![Getting Started](./media/screenshots/register.png)
+![Getting Started](/media/screenshots/register.png)
 
