@@ -36,5 +36,5 @@ step 8: python manage.py runserver
 # screenshots 
 
 Registration page 
-![Getting Started](/socialproject/media/screenshoots/register.png)
+![Getting Started](media/screenshoots/register.png)
 
