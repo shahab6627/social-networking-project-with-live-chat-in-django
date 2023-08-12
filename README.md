@@ -35,6 +35,23 @@ step 8: python manage.py runserver
 
 # screenshots 
 
-Registration page 
+Registration page  
+
 ![Getting Started](media/screenshoots/register.png)
+
+Login Page 
+
+![Getting Started](media/screenshoots/login.png)
+
+profile Page
+
+![Getting Started](media/screenshoots/profile.png)
+
+Chat page
+
+![Getting Started](media/screenshoots/chat%20between%20two%20friends.png)
+
+
+
+
 
